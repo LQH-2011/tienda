@@ -1,29 +1,559 @@
 <!DOCTYPE html>
-<html lang=“es”>
+<html lang="es">
 <head>
-	<title>Tienda</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<style>
-		* {
-			font-family:Georgia,serif;
-			background-color:antiquewhite;
-		}
-		p {
-            text-align:center;
-            margin:auto;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda en Línea - Gato de Peluche</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-		address {
-			text-align:center;
-			margin-top:1em;
-		}
-	</style>
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .product-container {
+            display: flex;
+            flex-wrap: wrap;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .image-section {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+        }
+        
+        .main-image {
+            width: 100%;
+            height: 400px;
+            object-fit: contain;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .thumbnail-container {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+        
+        .thumbnail {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border: 2px solid transparent;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .thumbnail:hover, .thumbnail.active {
+            border-color: #ff8834;
+        }
+        
+        .details-section {
+            flex: 1;
+            min-width: 300px;
+            padding: 30px;
+            border-left: 1px solid #eee;
+        }
+        
+        .product-title {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .product-price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff8834;
+            margin-bottom: 20px;
+        }
+        
+        .product-description {
+            margin-bottom: 25px;
+            color: #555;
+        }
+        
+        .delivery-section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .location-select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        
+        .checkout-btn {
+            background-color: #ffff30;
+            color: #000000;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        
+        .checkout-btn:hover {
+            background-color: #ff8834;
+        }
+        
+        /* Comments Section Styles */
+        .comments-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .comments-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-bottom: 2px solid #ff8834;
+            padding-bottom: 10px;
+        }
+        
+        .comment-form {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .submit-btn {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .submit-btn:hover {
+            background-color: #3a7bc8;
+        }
+        
+        .comments-list {
+            margin-top: 20px;
+        }
+        
+        .comment {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+        
+        .comment:last-child {
+            border-bottom: none;
+        }
+        
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .comment-author {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .comment-date {
+            color: #777;
+            font-size: 14px;
+        }
+        
+        .comment-content {
+            color: #555;
+            line-height: 1.5;
+        }
+        
+        .no-comments {
+            text-align: center;
+            color: #777;
+            font-style: italic;
+            padding: 20px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+        }
+        
+        .error {
+            text-align: center;
+            padding: 20px;
+            color: #e74c3c;
+            background-color: #fadbd8;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .modal h2 {
+            color: #ff8834;
+            margin-bottom: 15px;
+        }
+        
+        .modal p {
+            margin-bottom: 20px;
+            color: #555;
+        }
+        
+        .close-modal {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .product-container {
+                flex-direction: column;
+            }
+            
+            .details-section {
+                border-left: none;
+                border-top: 1px solid #eee;
+            }
+        }
+    </style>
 </head>
 <body>
-	<p>¡Hola!</p>
-	<address>
-		<p><a href="https://lqh2011.com/">Mi Sitio Web Principal</a></p>
-		<p><a href="mailto:jesus@lqh2011.com">jesus@lqh2011.com</a></p>
-		<p>Github: <a href="https://github.com/LQH-2011">LQH-2011</a></p>
-	</address>
+    <div class="container">
+        <div class="product-container">
+            <div class="image-section">
+                <img id="main-image" class="main-image" src="/fotos/gatos/1.JPG" alt="Product Image">
+                <div class="thumbnail-container">
+                    <img class="thumbnail active" src="/fotos/gatos/1.JPG" alt="Thumbnail 1">
+                    <img class="thumbnail" src="/fotos/gatos/2.JPG" alt="Thumbnail 2">
+                    <img class="thumbnail" src="/fotos/gatos/3.JPG" alt="Thumbnail 3">
+                    <img class="thumbnail" src="/fotos/gatos/4.JPG" alt="Thumbnail 4">
+                    <img class="thumbnail" src="/fotos/gatos/5.jpeg" alt="Thumbnail 5">
+                </div>
+            </div>
+            
+            <div class="details-section">
+                <h1 class="product-title">Gato de Peluche</h1>
+                <div class="product-price">€20</div>
+                <p class="product-description">
+                    Este es el gato de peluche que busca usted.<br>Es sumamente suave y de muy buena calidad. 
+                    Con la lengua afuera y los ojos negros, es el animalito perfecto para el sofá o la cama. 
+                    ¡Lléveselo a casa y verá lo mucho que les encanta a sus hijos!
+                </p>
+                
+                <div class="delivery-section">
+                    <h3 class="section-title">Elija el Destino</h3>
+                    <select class="location-select" id="delivery-location">
+                        <option value="">Elija el destino</option>
+                        <option value="pi">Península Ibérica</option>
+                        <option value="fr">Francia</option>
+                        <option value="us">E.E.U.U.</option>
+                        <option value="de">Alemania</option>
+                        <option value="cn">China Continental</option>
+                        <option value="ln">La Luna</option>
+                    </select>
+                    <p id="delivery-info">Duración de envío: </p>
+                </div>
+                
+                <button class="checkout-btn" id="checkout-button">Add to Cart & Checkout</button>
+            </div>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="comments-section">
+            <h2 class="comments-title">Comentarios de Clientes</h2>
+            
+            <!-- Comment Form -->
+            <div class="comment-form">
+                <h3 class="section-title">Deja tu comentario</h3>
+                <form id="comment-form">
+                    <div class="form-group">
+                        <label for="comment-name" class="form-label">Tu nombre:</label>
+                        <input type="text" id="comment-name" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="comment-text" class="form-label">Tu comentario:</label>
+                        <textarea id="comment-text" class="form-textarea" required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Publicar comentario</button>
+                </form>
+            </div>
+            
+            <!-- Comments List -->
+            <div class="comments-list" id="comments-list">
+                <div class="loading">Cargando comentarios...</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="fake-site-modal">
+        <div class="modal-content">
+            <h2>Advertencia</h2>
+            <p>Esta página web no es una tienda en línea verdadera, sino el deber para mi clase de Español</p>
+            <p>Nada que se ve aquí se vende. Sin embargo, puede contactarme a través de correo electrónico: <a href="mailto:jesus@lqh2011.com">jesus@lqh2011.com</a></p>
+            <p>También puede visitar <a href="https://lqh2011.com/">mi sitio principal</a>.</p>
+            <button class="close-modal" id="close-modal">Cerrar</button>
+        </div>
+    </div>
+
+    <script>
+        // Thumbnail image selection
+        const thumbnails = document.querySelectorAll('.thumbnail');
+        const mainImage = document.getElementById('main-image');
+        
+        thumbnails.forEach(thumbnail => {
+            thumbnail.addEventListener('click', function() {
+                // Update main image
+                mainImage.src = this.src;
+                
+                // Update active thumbnail
+                thumbnails.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // Delivery location selection
+        const deliverySelect = document.getElementById('delivery-location');
+        const deliveryInfo = document.getElementById('delivery-info');
+        
+        deliverySelect.addEventListener('change', function() {
+            const location = this.value;
+            let deliveryTime = "";
+            
+            if (location === "pi") {
+                deliveryTime = "2-4 días (España, Portugal y Andorra)";
+            } else if (location === "fr") {
+                deliveryTime = "4-6 día";
+            } else if (location === "us") {
+                deliveryTime = "8-12 días";
+            } else if (location === "de") {
+                deliveryTime = "6-9 días";
+            } else if (location === "cn") {
+                deliveryTime = "14-20 días";
+            } else if (location === "ln") {
+                deliveryTime = "Nunca";
+            }
+            
+            deliveryInfo.textContent = `Duración de envío: ${deliveryTime}`;
+        });
+        
+        // Checkout button functionality
+        const checkoutButton = document.getElementById('checkout-button');
+        const modal = document.getElementById('fake-site-modal');
+        const closeModal = document.getElementById('close-modal');
+        
+        checkoutButton.addEventListener('click', function() {
+            const location = deliverySelect.value;
+            
+            if (!location) {
+                alert("Please select a delivery location before checking out.");
+                return;
+            }
+            
+            modal.style.display = 'flex';
+        });
+        
+        closeModal.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        
+        // Close modal when clicking outside of it
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+        
+        // Comments Section Functionality using textdb.online
+        const commentForm = document.getElementById('comment-form');
+        const commentsList = document.getElementById('comments-list');
+        
+        // Database name for storing comments
+        const DB_NAME = 'plush_cat_comments';
+        
+        // Function to format date
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            return new Date(dateString).toLocaleDateString('es-ES', options);
+        }
+        
+        // Function to load comments from textdb.online
+        async function loadComments() {
+            try {
+                const response = await fetch(`https://api.textdb.online/data/get_data/${DB_NAME}`);
+                
+                if (!response.ok) {
+                    throw new Error('Error al cargar los comentarios');
+                }
+                
+                const data = await response.json();
+                
+                // Clear loading message
+                commentsList.innerHTML = '';
+                
+                if (!data || data.length === 0) {
+                    commentsList.innerHTML = '<div class="no-comments">Aún no hay comentarios. ¡Sé el primero en comentar!</div>';
+                    return;
+                }
+                
+                // Sort comments by date (newest first)
+                data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                
+                // Display comments
+                data.forEach(comment => {
+                    const commentElement = document.createElement('div');
+                    commentElement.className = 'comment';
+                    commentElement.innerHTML = `
+                        <div class="comment-header">
+                            <span class="comment-author">${comment.name}</span>
+                            <span class="comment-date">${formatDate(comment.timestamp)}</span>
+                        </div>
+                        <div class="comment-content">${comment.comment}</div>
+                    `;
+                    commentsList.appendChild(commentElement);
+                });
+                
+            } catch (error) {
+                console.error('Error loading comments:', error);
+                commentsList.innerHTML = '<div class="error">Error al cargar los comentarios. Inténtalo de nuevo más tarde.</div>';
+            }
+        }
+        
+        // Function to post a new comment
+        async function postComment(name, comment) {
+            try {
+                const newComment = {
+                    name: name,
+                    comment: comment,
+                    timestamp: new Date().toISOString()
+                };
+                
+                const response = await fetch(`https://api.textdb.online/data/post_data/${DB_NAME}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(newComment)
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Error al publicar el comentario');
+                }
+                
+                // Reload comments to show the new one
+                loadComments();
+                
+                // Reset form
+                commentForm.reset();
+                
+            } catch (error) {
+                console.error('Error posting comment:', error);
+                alert('Error al publicar el comentario. Inténtalo de nuevo.');
+            }
+        }
+        
+        // Event listener for comment form submission
+        commentForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('comment-name').value.trim();
+            const comment = document.getElementById('comment-text').value.trim();
+            
+            if (!name || !comment) {
+                alert('Por favor, completa todos los campos.');
+                return;
+            }
+            
+            postComment(name, comment);
+        });
+        
+        // Load comments when page loads
+        document.addEventListener('DOMContentLoaded', loadComments);
+    </script>
 </body>
+</html>
