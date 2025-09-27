@@ -307,13 +307,13 @@
     <div class="container">
         <div class="product-container">
             <div class="image-section">
-                <img id="main-image" class="main-image" src="/fotos/gatos/1.JPG" alt="Product Image">
+                <img id="main-image" class="main-image" src="fotos/gatos/1.JPG" alt="Gato de Peluche">
                 <div class="thumbnail-container">
-                    <img class="thumbnail active" src="/fotos/gatos/1.JPG" alt="Thumbnail 1">
-                    <img class="thumbnail" src="/fotos/gatos/2.JPG" alt="Thumbnail 2">
-                    <img class="thumbnail" src="/fotos/gatos/3.JPG" alt="Thumbnail 3">
-                    <img class="thumbnail" src="/fotos/gatos/4.JPG" alt="Thumbnail 4">
-                    <img class="thumbnail" src="/fotos/gatos/5.jpeg" alt="Thumbnail 5">
+                    <img class="thumbnail active" src="fotos/gatos/1.JPG" alt="Vista frontal del gato de peluche">
+                    <img class="thumbnail" src="fotos/gatos/2.JPG" alt="Vista lateral del gato de peluche">
+                    <img class="thumbnail" src="fotos/gatos/3.JPG" alt="Vista trasera del gato de peluche">
+                    <img class="thumbnail" src="fotos/gatos/4.JPG" alt="Detalle de la cara del gato de peluche">
+                    <img class="thumbnail" src="fotos/gatos/5.jpeg" alt="Gato de peluche en contexto">
                 </div>
             </div>
             
@@ -337,10 +337,10 @@
                         <option value="cn">China Continental</option>
                         <option value="ln">La Luna</option>
                     </select>
-                    <p id="delivery-info">Duración de envío: </p>
+                    <p id="delivery-info">Duración de envío: Seleccione un destino</p>
                 </div>
                 
-                <button class="checkout-btn" id="checkout-button">Add to Cart & Checkout</button>
+                <button class="checkout-btn" id="checkout-button">Añadir al Carrito y Pagar</button>
             </div>
         </div>
 
@@ -373,10 +373,9 @@
     
     <div class="modal" id="fake-site-modal">
         <div class="modal-content">
-            <h2>Advertencia</h2>
-            <p>Esta página web no es una tienda en línea verdadera, sino el deber para mi clase de Español</p>
-            <p>Nada que se ve aquí se vende. Sin embargo, puede contactarme a través de correo electrónico: <a href="mailto:jesus@lqh2011.com">jesus@lqh2011.com</a></p>
-            <p>También puede visitar <a href="https://lqh2011.com/">mi sitio principal</a>.</p>
+            <h2>Aviso Importante</h2>
+            <p>Este es un sitio web falso creado únicamente con fines de demostración.</p>
+            <p>No se venden productos reales y no se realizarán entregas.</p>
             <button class="close-modal" id="close-modal">Cerrar</button>
         </div>
     </div>
@@ -390,6 +389,7 @@
             thumbnail.addEventListener('click', function() {
                 // Update main image
                 mainImage.src = this.src;
+                mainImage.alt = this.alt;
                 
                 // Update active thumbnail
                 thumbnails.forEach(t => t.classList.remove('active'));
@@ -401,6 +401,9 @@
         const deliverySelect = document.getElementById('delivery-location');
         const deliveryInfo = document.getElementById('delivery-info');
         
+        // Set initial delivery info
+        deliveryInfo.textContent = "Duración de envío: Seleccione un destino";
+        
         deliverySelect.addEventListener('change', function() {
             const location = this.value;
             let deliveryTime = "";
@@ -408,7 +411,7 @@
             if (location === "pi") {
                 deliveryTime = "2-4 días (España, Portugal y Andorra)";
             } else if (location === "fr") {
-                deliveryTime = "4-6 día";
+                deliveryTime = "4-6 días";
             } else if (location === "us") {
                 deliveryTime = "8-12 días";
             } else if (location === "de") {
@@ -417,6 +420,8 @@
                 deliveryTime = "14-20 días";
             } else if (location === "ln") {
                 deliveryTime = "Nunca";
+            } else {
+                deliveryTime = "Seleccione un destino";
             }
             
             deliveryInfo.textContent = `Duración de envío: ${deliveryTime}`;
@@ -431,7 +436,7 @@
             const location = deliverySelect.value;
             
             if (!location) {
-                alert("Please select a delivery location before checking out.");
+                alert("Por favor, seleccione un destino de envío antes de proceder al pago.");
                 return;
             }
             
@@ -449,43 +454,60 @@
             }
         });
         
-        // Comments Section Functionality using textdb.online
+        // Comments Section Functionality using TextDB.Online API
         const commentForm = document.getElementById('comment-form');
         const commentsList = document.getElementById('comments-list');
-        
-        // Database name for storing comments
-        const DB_NAME = 'plush_cat_comments';
-        
+
+        // Database name for storing comments - use a unique key
+        const DB_NAME = 'plush_cat_comments_' + Math.random().toString(36).substring(2, 10);
+
         // Function to format date
         function formatDate(dateString) {
             const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
             return new Date(dateString).toLocaleDateString('es-ES', options);
         }
-        
-        // Function to load comments from textdb.online
+
+        // Function to load comments from TextDB.Online
         async function loadComments() {
             try {
-                const response = await fetch(`https://api.textdb.online/data/get_data/${DB_NAME}`);
-                
+                // First, try to get the data key from a master record
+                const masterResponse = await fetch(`https://textdb.online/plush_cat_master`);
+                let actualDataKey = DB_NAME;
+        
+                // If master record exists, use the established data key
+                if (masterResponse.ok) {
+                    const masterKey = await masterResponse.text();
+                    if (masterKey) actualDataKey = masterKey;
+                }
+        
+                const response = await fetch(`https://textdb.online/${actualDataKey}`);
+        
                 if (!response.ok) {
+                    if (response.status === 404) {
+                        // No comments exist yet - initialize with empty array
+                        await initializeCommentsDB(actualDataKey);
+                        commentsList.innerHTML = '<div class="no-comments">Aún no hay comentarios. ¡Sé el primero en comentar!</div>';
+                        return;
+                    }
                     throw new Error('Error al cargar los comentarios');
                 }
-                
-                const data = await response.json();
-                
+        
+                const commentsText = await response.text();
+                const commentsData = commentsText ? JSON.parse(commentsText) : [];
+        
                 // Clear loading message
                 commentsList.innerHTML = '';
-                
-                if (!data || data.length === 0) {
+        
+                if (!commentsData || commentsData.length === 0) {
                     commentsList.innerHTML = '<div class="no-comments">Aún no hay comentarios. ¡Sé el primero en comentar!</div>';
                     return;
                 }
-                
+        
                 // Sort comments by date (newest first)
-                data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                
+                commentsData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
                 // Display comments
-                data.forEach(comment => {
+                commentsData.forEach(comment => {
                     const commentElement = document.createElement('div');
                     commentElement.className = 'comment';
                     commentElement.innerHTML = `
@@ -497,61 +519,100 @@
                     `;
                     commentsList.appendChild(commentElement);
                 });
-                
+        
             } catch (error) {
                 console.error('Error loading comments:', error);
                 commentsList.innerHTML = '<div class="error">Error al cargar los comentarios. Inténtalo de nuevo más tarde.</div>';
             }
         }
+
+        // Initialize the comments database
+        async function initializeCommentsDB(dataKey) {
+            try {
+                // Create master record pointing to our data key
+                await fetch(`https://api.textdb.online/update/?key=plush_cat_master&value=${dataKey}`);
         
+                // Initialize with empty array
+                await fetch(`https://api.textdb.online/update/?key=${dataKey}&value=${encodeURIComponent('[]')}`);
+            } catch (error) {
+                console.error('Error initializing database:', error);
+            }
+        }
+
         // Function to post a new comment
         async function postComment(name, comment) {
             try {
+                // Get the current data key
+                const masterResponse = await fetch(`https://textdb.online/plush_cat_master`);
+                let actualDataKey = DB_NAME;
+        
+                if (masterResponse.ok) {
+                    const masterKey = await masterResponse.text();
+                    if (masterKey) actualDataKey = masterKey;
+                }
+        
+                // Get existing comments
+                const currentResponse = await fetch(`https://textdb.online/${actualDataKey}`);
+                let existingComments = [];
+        
+                if (currentResponse.ok) {
+                    const currentText = await currentResponse.text();
+                    existingComments = currentText ? JSON.parse(currentText) : [];
+                }
+        
+                // Add new comment
                 const newComment = {
                     name: name,
                     comment: comment,
                     timestamp: new Date().toISOString()
                 };
-                
-                const response = await fetch(`https://api.textdb.online/data/post_data/${DB_NAME}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(newComment)
-                });
-                
-                if (!response.ok) {
+        
+                existingComments.push(newComment);
+        
+                // Update the database
+                const updateResponse = await fetch(`https://api.textdb.online/update/?key=${actualDataKey}&value=${encodeURIComponent(JSON.stringify(existingComments))}`);
+        
+                if (!updateResponse.ok) {
                     throw new Error('Error al publicar el comentario');
                 }
-                
+        
                 // Reload comments to show the new one
                 loadComments();
-                
+        
                 // Reset form
                 commentForm.reset();
-                
+        
+                // Show success message
+                setTimeout(() => {
+                    alert('¡Comentario publicado con éxito!');
+                }, 100);
+        
             } catch (error) {
                 console.error('Error posting comment:', error);
                 alert('Error al publicar el comentario. Inténtalo de nuevo.');
             }
         }
-        
+
         // Event listener for comment form submission
         commentForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            
+    
             const name = document.getElementById('comment-name').value.trim();
             const comment = document.getElementById('comment-text').value.trim();
-            
+    
             if (!name || !comment) {
                 alert('Por favor, completa todos los campos.');
                 return;
             }
-            
+    
+            if (comment.length > 200000) {
+                alert('El comentario es demasiado largo. Por favor, acórtalo.');
+                return;
+            }
+    
             postComment(name, comment);
         });
-        
+
         // Load comments when page loads
         document.addEventListener('DOMContentLoaded', loadComments);
     </script>
