@@ -481,7 +481,7 @@
                     if (masterKey) actualDataKey = masterKey;
                 }
         
-                const response = await fetch(`https://textdb.online/${actualDataKey}`);
+                const response = await fetch(`https://textdb.online/tiendalqh2011com`);
         
                 if (!response.ok) {
                     if (response.status === 404) {
@@ -553,7 +553,7 @@
                 }
         
                 // Get existing comments
-                const currentResponse = await fetch(`https://textdb.online/${actualDataKey}`);
+                const currentResponse = await fetch(`https://textdb.online/tiendalqh2011com`);
                 let existingComments = [];
         
                 if (currentResponse.ok) {
@@ -571,7 +571,7 @@
                 existingComments.push(newComment);
         
                 // Update the database
-                const updateResponse = await fetch(`https://api.textdb.online/update/?key=${actualDataKey}&value=${encodeURIComponent(JSON.stringify(existingComments))}`);
+                const updateResponse = await fetch(`https://api.textdb.online/update/?key=tiendalqh2011com&value=${encodeURIComponent(JSON.stringify(existingComments))}`);
         
                 if (!updateResponse.ok) {
                     throw new Error('Error al publicar el comentario');
